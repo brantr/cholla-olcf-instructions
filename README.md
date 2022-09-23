@@ -124,3 +124,29 @@ includes
 * `scale_factor_analysis_56.txt` lists scale factors
 
 ## Step X): Summit Submit Job
+
+* run sims
+* `/gpfs/alpine/ast175/proj-shared/using_cholla/simulations/256_50Mpc/submit_job_summit.lsf`
+* `bsub submit.job_summit.lsf`
+* `bjobs`
+* computing transmitted flux is the slowest
+* less `[job]_output.txt`
+* CHECK Statistics
+* mean gas is 13.8
+* temp is ~ 231
+* HI fraction is hand coded
+* enzo using PRIMORDIAL+IONIZED
+* YHe fixed 
+* Dual energy parameters
+* Delta scale 0.003 for this resolution
+* Beginning Delta a set by expansion, dont want a timestep >> than delta a expansion
+* `run_timing.log`, units are ms
+* To do compute P(k) on the fly
+
+## Step Y): Analysis
+* go back to andes
+* `salloc -A AST175 -p gpu -N 1 -t 1:00:00`
+* compute matter Pk
+* `code/cosmo_analysi/matter_distribution/`
+* `module load python/3.7-anaconda3`
+* `plot_matter_power_specturm.py`
