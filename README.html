@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="instructions-for-performing-cholla-cosmological-simulations-on-the-olcf-systems">Instructions for performing Cholla cosmological simulations on the OLCF systems</h1>
+<p>This markdown site documents how to perform Cholla cosmological simulations on OLCF systems, with Summit as an example.</p>
+<h2 id="step-0">Step 0)</h2>
+<ul>
+<li>Log onto Summit</li>
+</ul>
+<p><code>ssh [username]@[system].olcf.ornl.gov</code></p>
+<p>followed by</p>
+<p><code>[pin][RSA key]</code></p>
+<p>Common user name and pins cannot start with 0.</p>
+<h2 id="step-1-clone-code">Step 1) Clone code</h2>
+<ul>
+<li>Code fork</li>
+</ul>
+<p><code>https://github.com/brantr/cholla:cosmology</code></p>
+<p>The fork from Bruno’s repo was deleted and then added back to include cosmology.</p>
+<ul>
+<li>Clone onto Summit</li>
+</ul>
+<p><code>/ccs/home/brantr/code/cholla</code></p>
+<p>Is a git clone of Bruno’s repo.</p>
+<h2 id="step-2-configure-code">Step 2) Configure code</h2>
+<p><code>source builds/setup.summit.gcc.sh</code></p>
+<p>or</p>
+<p><code>source builds/setup.frontier.gcc.sh</code></p>
+<p>builds from <code>gcc 9.1.0</code> currently.</p>
+<h2 id="step-3-compilation">Step 3) Compilation</h2>
+<p><code>builds/make type cosmology</code></p>
+<p>calls</p>
+<p><code>make type particles</code> and <code>make type hydro</code></p>
+<p>includes</p>
+<p><code>-DANALYSIS -DPHASE_DIAGRAM -DLYA_STATISTICS -DOUTPUT_SKEWERS</code></p>
+<h3 id="check-average_slow_cells">CHECK <code>AVERAGE_SLOW_CELLS</code></h3>
+<h3 id="n_ouptut_complete1-sets-restarts-vs.-truncated-snapshot-with-limited-info"><code>N_OUPTUT_COMPLETE=1</code> sets restarts vs. truncated snapshot with limited info</h3>
+<h3 id="make-typecosmology-can-add--j-20-takes-1-2-min."><code>make TYPE=cosmology</code> can add <code>-j 20</code>, takes 1-2 min.</h3>
+<h3 id="in-bin-cholla.cosmology.summit">In <code>bin/</code> <code>cholla.cosmology.summit</code></h3>
+<h3 id="example-make-ics">Example <code>make ics</code></h3>
+<ul>
+<li><p><code>git clone cosmo_analysis</code></p></li>
+<li><p><code>cd ~/code/cosmo_analysis/initial_conditions/ics_music/Music</code></p></li>
+<li><p><code>cp Makefile_summit makefile</code></p></li>
+<li><p><code>module load gsl hdf5</code></p></li>
+<li><p>note <code>-I /usr/include/tirpc</code> for <code>tipsy</code> rpc include</p></li>
+<li><p><code>make</code></p></li>
+<li><p><code>ics_music/music/</code> parameter files</p></li>
+<li><p><code>level 2^8=256</code></p></li>
+<li><p><code>zstart = 100</code></p></li>
+<li><p><code>50 Mpc/h</code></p></li>
+<li><p><code>YHe=0 -&gt; 0.29</code> CHECK</p></li>
+<li><p><code>seeds for each level</code></p></li>
+<li><p><code>format enzo</code></p></li>
+<li><p><code>filename change ics_hydro_256_50Mpc.conf</code></p></li>
+<li><p><code>/gpfs/alpine/ast175/proj-shared/using_cholla/ics/ics_music/ics_256_60Mpc.enzo?</code></p></li>
+<li><p><code>outputs file to gps</code></p></li>
+<li><p>run from Andes</p></li>
+<li><p><code>-&gt; outputs random numbers to working direcotry</code></p></li>
+<li><p>log into Andes</p></li>
+<li><p><code>ssh brant@andes.olcf.ornl.gov</code></p></li>
+<li><p><code>module load gsl hdf5</code></p></li>
+<li><p><code>fftw/3.3.10</code></p></li>
+<li><p><code>cp music /gpfs/alpine/proj-shared/ast175/using_cholla/ics/ics_music</code></p></li>
+</ul>
+<h2 id="get-an-interactive-node-and-create-enzo-ics">Get an interactive node and create enzo ics</h2>
+<ul>
+<li><code>salloc -A AST175 -p gpu -N 1 -t 1:00:00</code></li>
+<li><code>./music_ands? ~ /paramfile</code></li>
+</ul>
+<h2 id="convert-enzo-to-cholla">Convert enzo to cholla</h2>
+<ul>
+<li><code>~/code/cosmo_analysis/initial_conditions/generate_ics_from_enzo_file.py</code></li>
+<li>pass size of box</li>
+<li>N of cells per side</li>
+<li>n_boxes -&gt; subvolumes + mpi processes</li>
+<li>decompostion is specified in <code>proc_grid</code></li>
+<li><code>load pythno/3.7-anaconda3</code></li>
+<li><code>python3 generate ics_from_enzo_fil.py hydro particles</code></li>
+<li>wrote <code>/gpfs/alpine/ast175/proj-shared/using_cholla/ics/ics_music/ics_256_50Mpc/ics_z100</code></li>
+<li>Run Dir <code>/gpfs/alpine/ast175/proj-shared/using_cholla/simulations/256_50Mpc/param.txt</code></li>
+<li>Example parameter file</li>
+<li><code>tout</code> not used</li>
+<li><code>outstep</code> not used</li>
+<li>specify outputs in scale factof file</li>
+<li>indir -&gt; input files</li>
+<li>outdir -&gt; output dir</li>
+<li>scale_output_file -&gt; list of output scale factors</li>
+<li>list of a’s</li>
+<li>100&gt;0.0099 – –</li>
+<li>a = 0.2 -&gt; z=4, ends here</li>
+<li>exactly lost entry?</li>
+</ul>
+<h2 id="uvb_rates_file-is-in-gpfsalpineast175proj-sharedusing_chollasimulatins256_60mpcuvb_rates_v22.txt"><code>UVB_rates_file</code> is in <code>/gpfs/alpine/ast175/proj-shared/using_cholla/simulatins/256_60Mpc/uvb_rates_v22.txt</code></h2>
+<ul>
+<li>SEE HEADER FOR COLUMNS</li>
+<li>eV/s and 1/2</li>
+<li><code>lya_skewers_stride=8</code></li>
+<li>skip 8 scale with /res</li>
+<li><code>lya_Pk_d_log_k=0.1</code></li>
+<li><code>analysis_scale_outputs_file</code></li>
+<li><code>scale_factor_analysis_56.txt</code> lists scale factors</li>
+</ul>
+<h2 id="step-x-summit-submit-job">Step X): Summit Submit Job</h2>
+</body>
+</html>
