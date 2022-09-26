@@ -150,3 +150,50 @@ includes
 * `code/cosmo_analysi/matter_distribution/`
 * `module load python/3.7-anaconda3`
 * `plot_matter_power_specturm.py`
+* Lbox = 50000
+* ncells = 256
+* n_bins = 15
+
+## Step Z): Choose snapshot type
+* line 42 (part of compute matter pk)
+* `load_snapshot_data_distributed`
+* `subgrid + range of axes` for loading subvolume
+* `subgird = [[0,256],[0,256],[0,256]]`
+* any hdf5 fields to P(k)
+
+## Step AA): Compute Flux P(k)
+* `cosmo_analysis/lya_statistics/`
+* `compute_transmitted_flux.py`
+* `/gpfs/alpine/ast175/proj-shared/using-cholla/`
+* `transmitted_flux_files`
+* `ipython`
+* `run compute_transmitted_flux.py` 
+* `data_flux-> flux_new`
+* `skewers flux` `skewers total`?
+* `data_ps` -> ps data -> mean ps, k val, skewer ps
+* TO DO > save flux pk on the fly
+
+## Step AB): We did
+* `compile ics generator`
+* `run ics`
+* `compile cholla`
+* `rum cosmo sim`
+* `compute matter pk`
+* `compute flux pk`
+
+## Step AC): OUTSTANDING ISSUES
+* `running large grids of sims`
+* `cholla ics generator`
+* `perform mcmc analysis`
+
+## Step AD): Cholla generate ics
+* `src/fft/` -- create objects and call with different filters
+* `Filter_inv_k2` -- input, output, ifdef?
+* `hanning? -> filter`
+* `pragma` `[=] device` `i2 k2 j2` `d=-1/k^2 multiply by grid`
+* `1/k^2 filter`
+* `Filter_rescale_by_power_spectrum (in out)`
+* `from i,j,k -> compute kx,ky,kz`
+* linear inter P(k) <- 'other approximation'
+* sqrt(Pk)  to rescale random numbers
+* calls `linear_interpolation`
